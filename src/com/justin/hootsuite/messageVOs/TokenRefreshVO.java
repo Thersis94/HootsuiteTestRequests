@@ -2,7 +2,7 @@ package com.justin.hootsuite.messageVOs;
 /****************************************************************************
  * <b>Title</b>: TokenRefreshVO.java
  * <b>Project</b>: Hootsuite
- * <b>Description: </b> CHANGE ME!!
+ * <b>Description: </b> VO for the body of the Token Refresh request
  * <b>Copyright:</b> Copyright (c) 2020
  * <b>Company:</b> Silicon Mountain Technologies
  * 

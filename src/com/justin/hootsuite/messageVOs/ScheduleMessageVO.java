@@ -2,11 +2,12 @@ package com.justin.hootsuite.messageVOs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /****************************************************************************
  * <b>Title</b>: TwitterMessageVO.java
  * <b>Project</b>: Hootsuite
- * <b>Description: </b> CHANGE ME!!
+ * <b>Description: </b> VO for the Schedule Message request
  * <b>Copyright:</b> Copyright (c) 2020
  * <b>Company:</b> Silicon Mountain Technologies
  * 
@@ -15,12 +16,12 @@ import java.util.List;
  * @since May 11, 2020
  * @updates:
  ****************************************************************************/
-public class TwitterMessageVO {
+public class ScheduleMessageVO {
 
 	private String text;
 	private List<String> socialProfileIds = new ArrayList<>();
 	private String scheduledSendTime;
-	private List<String> media = new ArrayList<>();
+	private List<Map<String, String>> media = new ArrayList<>();
 	/**
 	 * @return the text
 	 */
@@ -60,14 +61,14 @@ public class TwitterMessageVO {
 	/**
 	 * @return the media
 	 */
-	public List<String> getMedia() {
+	public List<Map<String, String>> getMedia() {
 		return media;
 	}
 	/**
-	 * @param media the media to set
+	 * @param mediaList the media to set
 	 */
-	public void setMedia(List<String> media) {
-		this.media = media;
+	public void setMedia(List<Map<String, String>> mediaList) {
+		this.media = mediaList;
 	}
 	
 	
