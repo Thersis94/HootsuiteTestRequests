@@ -1,6 +1,7 @@
 package com.justin.hootsuite.responseVOs;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.justin.hootsuite.socialMediaProfileVOs.SocialMediaProfileVO;
 
@@ -19,7 +20,7 @@ import com.justin.hootsuite.socialMediaProfileVOs.SocialMediaProfileVO;
 public class SchedulePostResponseVO {
 
 	ArrayList<SocialMediaProfileVO> data = new ArrayList<>();
-
+	ArrayList<HashMap<String, String>> errors = new ArrayList<>();
 	/**
 	 * @return the data
 	 */
@@ -36,6 +37,28 @@ public class SchedulePostResponseVO {
 	
 	public String getId() {
 		return data.get(0).getId();
+	}
+
+	/**
+	 * @return the errors
+	 */
+	public ArrayList<HashMap<String, String>> getErrors() {
+		return errors;
+	}
+
+	/**
+	 * @param errors the errors to set
+	 */
+	public void setErrors(ArrayList<HashMap<String, String>> errors) {
+		this.errors = errors;
+	}
+	
+	public String getErrorMessage() {
+		String errorMessage = "";
+		for(HashMap<String, String> error: errors) {
+			errorMessage = errorMessage + " | " + "Error code: " + error.get("code") + ". Error Message: " + error.get("message");
+		}
+		return errorMessage;
 	}
 	
 }
