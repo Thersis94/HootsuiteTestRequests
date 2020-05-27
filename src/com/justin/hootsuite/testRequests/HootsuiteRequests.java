@@ -1,24 +1,10 @@
 package com.justin.hootsuite.testRequests;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,11 +14,12 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
+import com.justin.hootsuite.messageVOs.ApproveMessageVO;
 import com.justin.hootsuite.messageVOs.MediaLinkRequestVO;
-import com.justin.hootsuite.messageVOs.TokenRefreshVO;
 import com.justin.hootsuite.messageVOs.ScheduleMessageVO;
 import com.justin.hootsuite.responseVOs.MediaLinkResponseVO;
 import com.justin.hootsuite.responseVOs.MediaUploadStatusResponseVO;
+import com.justin.hootsuite.responseVOs.SchedulePostResponseVO;
 import com.justin.hootsuite.responseVOs.TokenResponseVO;
 import com.justin.hootsuite.socialMediaProfileVOs.SocialMediaProfilesVO;
 import com.siliconmtn.io.http.SMTHttpConnectionManager;
@@ -40,57 +27,92 @@ import com.siliconmtn.io.http.SMTHttpConnectionManager.HttpConnectionType;
 
 /****************************************************************************
  * <b>Title</b>: HootsuiteTestRequests.java <b>Project</b>: Hootsuite
- * <b>Description: </b> Class for developing Hootsuite test requests <b>Copyright:</b> Copyright (c) 2020
- * <b>Company:</b> Silicon Mountain Technologies
+ * <b>Description: </b> Class for developing Hootsuite test requests
+ * <b>Copyright:</b> Copyright (c) 2020 <b>Company:</b> Silicon Mountain
+ * Technologies
  * 
  * @author justinjeffrey
  * @version 3.0
  * @since May 11, 2020
  * @updates:
  ****************************************************************************/
-public class HootsuiteTestRequests {
+public class HootsuiteRequests {
 
 	static Logger log = Logger.getLogger(Process.class.getName());
-	private String token = "q34VM9PMvM8kGwFCDdBZ737wOgkLRWv5_vWxFgudbN0.H3AsfMDdqS-xwRqpr6QoPvS1sZaSWWNio4YTf1Er9Ws"; // Stored in a db?
-	private String refresh_token = "-9kNN7dzTg3ttdJYgKZO7iXdyyrf7ykXZ9yHV-4-liI.dkOPbYLOemH1yZWPWs2K5Bvvb03UEWT61RoImHHlIWc"; // Stored in a db?
-	private Date tokenExperationDate = new Date(); // Stored in a db?
-	
+	private String token = "vIiu6n28yrIP_UzJg70zl40_ZdeliJYpkIKniZmNtEk.jmFvIgoUOaVqR7F6k9rfnWmDnUQTTJsHhpZK4TIurGg";
+	private String refresh_token = "zBFB_hovBaUIK-vq1J9BnQolL-W-4QcNtgzmh-3-fGI.5Ha1ccFQ62P22ugAJSDW7Onzs2jEr_wHk7pxrCptdu0";
+	private Date tokenExperationDate = new Date();
 
-	public static void main(String[] args) throws IOException {
-		HootsuiteTestRequests hr = new HootsuiteTestRequests();
-		
-//		log.info(hr.getSocialProfiles());
-		
-//		hr.refreshToken();
-		
-//		hr.getMediaUploadLink("image/jpeg", 11501);
-		
-//		log.info(hr.retrieveMediaUploadStatus("aHR0cHM6Ly9ob290c3VpdGUtdmlkZW8uczMuYW1hem9uYXdzLmNvbS9wcm9kdWN0aW9uLzIxODQ1ODMxX2UyNGM3MDNiLTAxYzMtNDRkZi1hY2M0LTBiYTM2NDRlNzc0NC5qcGc="));
-		
-		
-		
-//		HashMap<String, String> socialProfilesMap = hr.getSocialProfiles();
-//		String messageText = "Java Test message.";
-//		ArrayList<String> socialProfiles = new ArrayList<>();
-//		socialProfiles.add(socialProfilesMap.get("TWITTER"));
-//		String postDate = "2020-6-9T16:15:00Z";
-//		hr.postManager(hr, messageText, socialProfiles, postDate);
+	public static void main(String[] args) throws IOException, InterruptedException {
+		HootsuiteRequests hr = new HootsuiteRequests();
+
+		HashMap<String, String> socialProfilesMap = hr.getSocialProfiles();
+
+		String messageText = "Java Test message.";
+
+		ArrayList<String> socialProfiles = new ArrayList<>();
+
+		socialProfiles.add(socialProfilesMap.get("TWITTER"));
+
+		String postDate = "2020-6-27T20:00:00Z";
+
+		hr.postMessageWithMedia(hr, messageText, socialProfiles, postDate, "/home/justinjeffrey/Downloads/demoImg.jpeg",
+				"image/jpeg");
 
 	}
 
-	private void postManager(HootsuiteTestRequests hr, String messageText, ArrayList<String> socialProfiles, String postDate) {
-		
+	/**
+	 * Post a message using the hootsuite api.
+	 * 
+	 * @param hr             an instance of HootsuiteRequests.
+	 * @param messageText    a String with the text you would like to appear in the
+	 *                       message. (Carriage returns can be used to format the
+	 *                       message.)
+	 * @param socialProfiles a ArrayList of socialProfile ids.
+	 * @param postDate       ISO 8601 formatted String containing the date to post
+	 *                       the message. ("YYYY-M-DTHH:MM:SSZ")
+	 *                       https://en.wikipedia.org/wiki/ISO_8601
+	 */
+	public void postMessage(HootsuiteRequests hr, String messageText, ArrayList<String> socialProfiles,
+			String postDate) {
+		String postId = "";
+		String mediaId = "";
 		try {
-			hr.schedulePost(socialProfiles, postDate, messageText);
+			postId = hr.schedulePost(socialProfiles, postDate, messageText, mediaId);
+
+			hr.approveMessage(postId);
 		} catch (Exception e) {
 			log.info(e);
 		}
 	}
-	
-	private void postManager(HootsuiteTestRequests hr, String message, ArrayList<String> socialProfiles, String postDate, String mediaLocation) {
-		
-		
-		
+
+	/**
+	 * Post a message with media using the hootsuite api.
+	 * 
+	 * @param hr             an instance of HootsuiteRequests.
+	 * @param messageText    a String with the text you would like to appear in the
+	 *                       message. (Carriage returns can be used to format the
+	 *                       message.)
+	 * @param socialProfiles a ArrayList of socialProfile ids.
+	 * @param postDate       ISO 8601 formatted String containing the date to post
+	 *                       the message. ("YYYY-M-DTHH:MM:SSZ")
+	 *                       https://en.wikipedia.org/wiki/ISO_8601
+	 * @param mediaLocation  String formatted path to the media that is being
+	 *                       uploaded
+	 * @param mimeType       String formatted mimeType. ("image/jpeg")
+	 * @param sizeBytes      media byte size.
+	 */
+	public void postMessageWithMedia(HootsuiteRequests hr, String messageText, ArrayList<String> socialProfiles,
+			String postDate, String mediaLocation, String mimeType) {
+		String postId = "";
+		String mediaId = "";
+		try {
+			mediaId = hr.uploadHootsuiteMedia(mimeType, mediaLocation);
+			postId = hr.schedulePost(socialProfiles, postDate, messageText, mediaId);
+			hr.approveMessage(postId);
+		} catch (Exception e) {
+			log.info(e);
+		}
 	}
 
 	/**
@@ -108,7 +130,7 @@ public class HootsuiteTestRequests {
 		addRefreshTokenHeaders(cm);
 
 		addRefreshTokenParameters(parameters);
-		
+
 		HttpConnectionType post = HttpConnectionType.POST;
 
 		// Send post request
@@ -117,9 +139,9 @@ public class HootsuiteTestRequests {
 
 		// Capture the response
 		TokenResponseVO response = gson.fromJson(StandardCharsets.UTF_8.decode(in).toString(), TokenResponseVO.class);
-		
+
 		log.info(gson.toJson(response).toString()); // Remove when the tokens are stored to a database.
-		
+
 		checkRefreshTokenResponse(response);
 
 	}
@@ -176,25 +198,26 @@ public class HootsuiteTestRequests {
 	public HashMap<String, String> getSocialProfiles() throws IOException {
 
 //		checkToken();
-		
+
 		Gson gson = new Gson();
-		
+
 		Map<String, Object> parameters = new HashMap<>();
 
 		SMTHttpConnectionManager cm = new SMTHttpConnectionManager();
 
 		addGetSocialProfilesHeaders(cm);
-		
+
 		HttpConnectionType get = HttpConnectionType.GET;
 
 		// Send post request
-				ByteBuffer in = ByteBuffer
-						.wrap(cm.getRequestData("https://platform.hootsuite.com/v1/socialProfiles", parameters, get));
+		ByteBuffer in = ByteBuffer
+				.wrap(cm.getRequestData("https://platform.hootsuite.com/v1/socialProfiles", parameters, get));
 
-				SocialMediaProfilesVO response = gson.fromJson(StandardCharsets.UTF_8.decode(in).toString(), SocialMediaProfilesVO.class);
-				HashMap<String, String> socialProfiles = response.getAllSocialIds();
-				
-				return socialProfiles;
+		SocialMediaProfilesVO response = gson.fromJson(StandardCharsets.UTF_8.decode(in).toString(),
+				SocialMediaProfilesVO.class);
+		HashMap<String, String> socialProfiles = response.getAllSocialIds();
+
+		return socialProfiles;
 	}
 
 	/**
@@ -224,49 +247,53 @@ public class HootsuiteTestRequests {
 	 * 
 	 * @throws IOException
 	 */
-	private void schedulePost(ArrayList<String> socialIdList, String scheduledSendTime, String messageText) throws IOException {
+	private String schedulePost(ArrayList<String> socialIdList, String scheduledSendTime, String messageText,
+			String mediaId) throws IOException {
 
 //		checkToken();
+		
 		Map<String, String> mediaIds = new HashMap<>();
-		
-		// Change this to the media id that is going to be passed to this method
-		mediaIds.put("id", "aHR0cHM6Ly9ob290c3VpdGUtdmlkZW8uczMuYW1hem9uYXdzLmNvbS9wcm9kdWN0aW9uLzIxODQ1ODMxXzE4ZmJhYjIyLTQ5ZjgtNGY2My1iMDExLTUzNjFmNjc1ZTNkMC5qcGc=");
-		
+
+		mediaIds.put("id", mediaId);
+
 		List<Map<String, String>> mediaList = new ArrayList<>();
 		mediaList.add(mediaIds);
 
 		Gson gson = new Gson();
 
 		ScheduleMessageVO message = new ScheduleMessageVO();
+		
+		setMessageContent(message, scheduledSendTime, socialIdList, messageText, mediaList);
+		
+
+		byte[] document = gson.toJson(message).getBytes();
+
+		SMTHttpConnectionManager cm = new SMTHttpConnectionManager();
+		cm.addRequestHeader("Authorization", "Bearer " + token);
+
+		ByteBuffer in = ByteBuffer.wrap(cm.sendBinaryData("https://platform.hootsuite.com/v1/messages", document,
+				"application/json", HttpConnectionType.POST));
+
+		SchedulePostResponseVO response = gson.fromJson(StandardCharsets.UTF_8.decode(in).toString(),
+				SchedulePostResponseVO.class);
+
+		return response.getId();
+	}
+
+	/**
+	 * Sets the parameters to the values of the ScheduleMessageVO
+	 * @param message
+	 * @param scheduledSendTime
+	 * @param socialIdList
+	 * @param messageText
+	 * @param mediaList
+	 */
+	private void setMessageContent(ScheduleMessageVO message, String scheduledSendTime, ArrayList<String> socialIdList,
+			String messageText, List<Map<String, String>> mediaList) {
 		message.setDate(scheduledSendTime);
 		message.setSocialProfiles(socialIdList);
 		message.setText(messageText);// This needs to be restricted to a length of 280 characters for twitter
 		message.setMedia(mediaList);
-
-		byte[] document = gson.toJson(message).getBytes();
-		
-		// Loggers to test document format. Delete me
-//		String newStr = new String(document);
-//		log.info(newStr);
-
-		SMTHttpConnectionManager cm = new SMTHttpConnectionManager();
-		
-		addSchedulePostHeaders(cm);
-
-		ByteBuffer in = ByteBuffer
-				.wrap(cm.sendBinaryData("https://platform.hootsuite.com/v1/messages", document, "application/json", HttpConnectionType.POST));
-		log.info(StandardCharsets.UTF_8.decode(in).toString());
-		
-		// Build the response bean
-		
-	}
-
-	/**
-	 * Adds headers for the schedule post request
-	 * @param cm receives connection manager
-	 */
-	private void addSchedulePostHeaders(SMTHttpConnectionManager cm) {
-		cm.addRequestHeader("Authorization", "Bearer " + token);
 	}
 
 	/**
@@ -275,40 +302,69 @@ public class HootsuiteTestRequests {
 	 * message uploads
 	 * 
 	 * @throws IOException
+	 * @throws InterruptedException
 	 */
-	public void getMediaUploadLink(String mimeType, int sizeBytes) throws IOException {
+	private String uploadHootsuiteMedia(String mimeType, String path) throws IOException, InterruptedException {
+
+		String mediaId = "";
 
 //		checkToken();
 
-		
 		Gson gson = new Gson();
 
 		SMTHttpConnectionManager cm = new SMTHttpConnectionManager();
 		cm.addRequestHeader("Authorization", "Bearer " + token);
-		cm.addRequestHeader("accept-encoding", "gzip, deflate, br");
-		
+
 		MediaLinkRequestVO mlr = new MediaLinkRequestVO();
 		mlr.setMimeType(mimeType);
-		mlr.setSizeBytes(sizeBytes);
 
 		byte[] document = gson.toJson(mlr).getBytes();
-		
-		ByteBuffer in = ByteBuffer
-				.wrap(cm.sendBinaryData("https://platform.hootsuite.com/v1/media", document, "application/json", HttpConnectionType.POST));
+
+		ByteBuffer in = ByteBuffer.wrap(cm.sendBinaryData("https://platform.hootsuite.com/v1/media", document,
+				"application/json", HttpConnectionType.POST));
 
 		MediaLinkResponseVO response = gson.fromJson(StandardCharsets.UTF_8.decode(in).toString(),
 				MediaLinkResponseVO.class);
- 
-		
+
 		if (response.successfulRequest()) {
-			uploadMedia(response, mlr);
+			uploadMediaToAWS(response, mlr, path);
+			mediaId = response.getId();
 		} else {
 			log.info("checkMediaLinkResponse returned false");
 			log.info(response.getError() + " : " + response.getError_description());
 		}
-		
-		if(retrieveMediaUploadStatus(response.getId())) {
+
+		waitForSuccessfulUpload(response);
+
+		return mediaId;
+	}
+
+	/**
+	 * Loops the retrieveMediaUploadStatus until the media has been successfully
+	 * uploaded to the AWS server
+	 * 
+	 * @param response the response from hootsuite media link request
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	private void waitForSuccessfulUpload(MediaLinkResponseVO response) throws IOException, InterruptedException {
+
+		// The has to be a better way to handle this...
+		int timeOut = 0;
+		while (!retrieveMediaUploadStatus(response.getId())) {
+			timeOut++;
+			if (timeOut > 10) {
+				log.info("Upload Failed");
+				break;
+			}
+			Thread.sleep(1000);
+			log.info("Waiting for upload to complete.");
+		}
+
+		if (retrieveMediaUploadStatus(response.getId())) {
 			log.info("Media successfully uploaded.");
+		} else {
+			log.info("Media still uploading.");
 		}
 	}
 
@@ -322,58 +378,58 @@ public class HootsuiteTestRequests {
 	 * 
 	 * @throws IOException
 	 */
-	public void uploadMedia(MediaLinkResponseVO response, MediaLinkRequestVO mlr) throws IOException {
-		
+	private void uploadMediaToAWS(MediaLinkResponseVO response, MediaLinkRequestVO mlr, String path)
+			throws IOException {
+
 		String errorMessage = "";
 
 		SMTHttpConnectionManager cm = new SMTHttpConnectionManager();
-		
+
 		// Using a file path for now. Later this will need to be changed to whatever
 		// format Webcrescendo uses
-		byte[] bytesArr = Files.readAllBytes(Paths.get("/home/justinjeffrey/Downloads/demoImg.jpeg"));
-		
+		byte[] bytesArr = Files.readAllBytes(Paths.get(path));
+
 		// Build the put request using the response url value
 		ByteBuffer in = ByteBuffer
 				.wrap(cm.sendBinaryData(response.getUploadUrl(), bytesArr, mlr.getMimeType(), HttpConnectionType.PUT));
-		
+
 		errorMessage = StandardCharsets.UTF_8.decode(in).toString();
-		
-		if(errorMessage.length() > 0) {
+
+		if (errorMessage.length() > 0) {
 			log.info("uploadMedia response code: " + cm.getResponseCode());
 			log.info("uploadMedia error message: " + errorMessage);
 		}
 	}
-	
+
 	/**
 	 * Checks the upload status of a media file to the Hootsuite/Amazon AWS server
+	 * 
 	 * @return the boolean status of the upload
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	public boolean retrieveMediaUploadStatus(String mediaId) throws IOException {
-		
+	private boolean retrieveMediaUploadStatus(String mediaId) throws IOException {
+
 //		checkToken();
-		
+
 		Gson gson = new Gson();
-		
+
 		SMTHttpConnectionManager cm = new SMTHttpConnectionManager();
 		cm.addRequestHeader("Authorization", "Bearer " + token);
-		
+
 		Map<String, Object> parameters = new HashMap<>();
-		
+
 		HttpConnectionType get = HttpConnectionType.GET;
-		
+
 		ByteBuffer in = ByteBuffer
 				.wrap(cm.getRequestData("https://platform.hootsuite.com/v1/media/" + mediaId, parameters, get));
 
-//		log.info(StandardCharsets.UTF_8.decode(in).toString()); // Logger to check response. Remove in production.
-		
-		MediaUploadStatusResponseVO response = gson.fromJson(StandardCharsets.UTF_8.decode(in).toString(), MediaUploadStatusResponseVO.class);
-		
-		if(response.getState() != null && response.getState().equalsIgnoreCase("READY")) {
+		MediaUploadStatusResponseVO response = gson.fromJson(StandardCharsets.UTF_8.decode(in).toString(),
+				MediaUploadStatusResponseVO.class);
+
+		if (response.getState() != null && response.getState().equalsIgnoreCase("READY"))
 			return true;
-		} else {
+		else
 			return false;
-		}
 	}
 
 	/**
@@ -382,9 +438,31 @@ public class HootsuiteTestRequests {
 	 * 
 	 * @throws IOException
 	 */
-	public void approveMessage() throws IOException {
+	private void approveMessage(String messageId) throws IOException {
 
-		checkToken();
+//		checkToken();
+
+		Gson gson = new Gson();
+
+		SMTHttpConnectionManager cm = new SMTHttpConnectionManager();
+		cm.addRequestHeader("Authorization", "Bearer " + token);
+
+		ApproveMessageVO message = new ApproveMessageVO();
+		message.setSequenceNumber(11);
+
+		byte[] document = gson.toJson(message).getBytes();
+
+		HttpConnectionType post = HttpConnectionType.POST;
+
+		ByteBuffer in = ByteBuffer
+				.wrap(cm.sendBinaryData("https://platform.hootsuite.com/v1/messages/" + messageId + "/approve",
+						document, "application/json", post));
+
+		log.info("approveMessage response." + StandardCharsets.UTF_8.decode(in).toString()); // Logger to check
+																								// response. Remove in
+																								// production.
+
+//		ApproveMessageResponseVO response = gson.fromJson(StandardCharsets.UTF_8.decode(in).toString(), ApproveMessageResponseVO.class);
 
 	}
 }
