@@ -1,6 +1,5 @@
 package com.justin.hootsuite.responseVOs;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /****************************************************************************

@@ -7,7 +7,7 @@ import com.justin.hootsuite.socialMediaProfileVOs.SocialMediaProfileVO;
 /****************************************************************************
  * <b>Title</b>: SchedulePostResponseVO.java
  * <b>Project</b>: Hootsuite
- * <b>Description: </b> CHANGE ME!!
+ * <b>Description: </b> VO for the Schedule Post Response
  * <b>Copyright:</b> Copyright (c) 2020
  * <b>Company:</b> Silicon Mountain Technologies
  * 

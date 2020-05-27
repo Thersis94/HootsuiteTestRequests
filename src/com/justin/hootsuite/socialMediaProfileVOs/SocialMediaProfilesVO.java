@@ -6,7 +6,7 @@ import java.util.HashMap;
 /****************************************************************************
  * <b>Title</b>: SocialMediaProfiles.java
  * <b>Project</b>: Hootsuite
- * <b>Description: </b> CHANGE ME!!
+ * <b>Description: </b> VO that holds a list of social media profile VOs. Can return either a hashmap, with all of the social media ids or a specific id by passing the name of the social network.
  * <b>Copyright:</b> Copyright (c) 2020
  * <b>Company:</b> Silicon Mountain Technologies
  * 
@@ -34,6 +34,10 @@ public class SocialMediaProfilesVO {
 		return id;
 	}
 	
+	/**
+	 * Used for getting a hashmap of all of the social media profiles.
+	 * @returna HashMap with all of the social media profiles
+	 */
 	public HashMap<String, String> getAllSocialIds() {
 		HashMap<String, String> ids = new HashMap<>();
 		for (SocialMediaProfileVO profile: data) {

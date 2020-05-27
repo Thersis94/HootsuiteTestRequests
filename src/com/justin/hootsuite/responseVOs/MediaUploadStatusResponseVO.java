@@ -5,7 +5,7 @@ import java.util.HashMap;
 /****************************************************************************
  * <b>Title</b>: MediaUploadStatusResponseVO.java
  * <b>Project</b>: Hootsuite
- * <b>Description: </b> CHANGE ME!!
+ * <b>Description: </b> VO for the Media Status Response
  * <b>Copyright:</b> Copyright (c) 2020
  * <b>Company:</b> Silicon Mountain Technologies
  * 

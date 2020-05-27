@@ -77,10 +77,11 @@ public class HootsuiteRequests {
 			String postDate) {
 		String postId = "";
 		String mediaId = "";
+		
 		try {
 			postId = hr.schedulePost(socialProfiles, postDate, messageText, mediaId);
 
-			hr.approveMessage(postId);
+//			hr.approveMessage(postId); No longer sure these are needed
 		} catch (Exception e) {
 			log.info(e);
 		}
@@ -106,10 +107,11 @@ public class HootsuiteRequests {
 			String postDate, String mediaLocation, String mimeType) {
 		String postId = "";
 		String mediaId = "";
+		
 		try {
 			mediaId = hr.uploadHootsuiteMedia(mimeType, mediaLocation);
 			postId = hr.schedulePost(socialProfiles, postDate, messageText, mediaId);
-			hr.approveMessage(postId);
+//			hr.approveMessage(postId); No longer sure these are needed
 		} catch (Exception e) {
 			log.info(e);
 		}
@@ -243,15 +245,25 @@ public class HootsuiteRequests {
 	}
 
 	/**
-	 * postMessage will post a message to the hootsuite api.
+	 * Schedules a social media post using the hootsuite api
 	 * 
+	 * @param socialIdList      List of social media ids
+	 * @param scheduledSendTime ISO 8601 formatted String containing the date to
+	 *                          post the message. ("YYYY-M-DTHH:MM:SSZ")
+	 *                          https://en.wikipedia.org/wiki/ISO_8601
+	 * @param messageText       a String with the text you would like to appear in
+	 *                          the message. (Carriage returns can be used to format
+	 *                          the message.)
+	 * @param mediaId           the id returned when uploading media using the
+	 *                          hootsuite api
+	 * @return The id of the scheduled pot
 	 * @throws IOException
 	 */
 	private String schedulePost(ArrayList<String> socialIdList, String scheduledSendTime, String messageText,
 			String mediaId) throws IOException {
 
 //		checkToken();
-		
+
 		Map<String, String> mediaIds = new HashMap<>();
 
 		mediaIds.put("id", mediaId);
@@ -262,9 +274,8 @@ public class HootsuiteRequests {
 		Gson gson = new Gson();
 
 		ScheduleMessageVO message = new ScheduleMessageVO();
-		
+
 		setMessageContent(message, scheduledSendTime, socialIdList, messageText, mediaList);
-		
 
 		byte[] document = gson.toJson(message).getBytes();
 
@@ -282,6 +293,7 @@ public class HootsuiteRequests {
 
 	/**
 	 * Sets the parameters to the values of the ScheduleMessageVO
+	 * 
 	 * @param message
 	 * @param scheduledSendTime
 	 * @param socialIdList
@@ -349,7 +361,7 @@ public class HootsuiteRequests {
 	 */
 	private void waitForSuccessfulUpload(MediaLinkResponseVO response) throws IOException, InterruptedException {
 
-		// The has to be a better way to handle this...
+		// Find a better way to do this!
 		int timeOut = 0;
 		while (!retrieveMediaUploadStatus(response.getId())) {
 			timeOut++;

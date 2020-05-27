@@ -2,7 +2,7 @@ package com.justin.hootsuite.socialMediaProfileVOs;
 /****************************************************************************
  * <b>Title</b>: SocialMediaProfileVO.java
  * <b>Project</b>: Hootsuite
- * <b>Description: </b> CHANGE ME!!
+ * <b>Description: </b> Social media profile VO holds descriptive information such as (id, type, socialNetworkId, socialNetworkUsername, avaterUrl, owner, ownerId)
  * <b>Copyright:</b> Copyright (c) 2020
  * <b>Company:</b> Silicon Mountain Technologies
  * 
