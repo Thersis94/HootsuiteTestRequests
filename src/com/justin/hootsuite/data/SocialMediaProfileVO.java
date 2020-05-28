@@ -1,4 +1,4 @@
-package com.justin.hootsuite.socialMediaProfileVOs;
+package com.justin.hootsuite.data;
 /****************************************************************************
  * <b>Title</b>: SocialMediaProfileVO.java
  * <b>Project</b>: Hootsuite

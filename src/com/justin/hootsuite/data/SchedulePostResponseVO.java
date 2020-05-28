@@ -1,9 +1,7 @@
-package com.justin.hootsuite.responseVOs;
+package com.justin.hootsuite.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import com.justin.hootsuite.socialMediaProfileVOs.SocialMediaProfileVO;
 
 /****************************************************************************
  * <b>Title</b>: SchedulePostResponseVO.java

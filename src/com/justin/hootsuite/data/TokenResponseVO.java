@@ -1,4 +1,4 @@
-package com.justin.hootsuite.responseVOs;
+package com.justin.hootsuite.data;
 /****************************************************************************
  * <b>Title</b>: TokenResponseVO.java
  * <b>Project</b>: Hootsuite

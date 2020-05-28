@@ -1,4 +1,4 @@
-package com.justin.hootsuite.messageVOs;
+package com.justin.hootsuite.data;
 /****************************************************************************
  * <b>Title</b>: MediaLinkRequestVO.java
  * <b>Project</b>: Hootsuite

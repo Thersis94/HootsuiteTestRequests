@@ -1,4 +1,4 @@
-package com.justin.hootsuite.messageVOs;
+package com.justin.hootsuite.data;
 
 import java.util.ArrayList;
 import java.util.List;

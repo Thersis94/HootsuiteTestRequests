@@ -1,5 +1,6 @@
-package com.justin.hootsuite.testRequests;
+package com.justin.hootsuite.manager;
 
+// JDK 11
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -11,17 +12,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// Apache Logger for detailed logging utilities
 import org.apache.log4j.Logger;
 
+// Gson for parsing json data
 import com.google.gson.Gson;
-import com.justin.hootsuite.messageVOs.ApproveMessageVO;
-import com.justin.hootsuite.messageVOs.MediaLinkRequestVO;
-import com.justin.hootsuite.messageVOs.ScheduleMessageVO;
-import com.justin.hootsuite.responseVOs.MediaLinkResponseVO;
-import com.justin.hootsuite.responseVOs.MediaUploadStatusResponseVO;
-import com.justin.hootsuite.responseVOs.SchedulePostResponseVO;
-import com.justin.hootsuite.responseVOs.TokenResponseVO;
-import com.justin.hootsuite.socialMediaProfileVOs.SocialMediaProfilesVO;
+
+// Local Libs
+import com.justin.hootsuite.data.MediaLinkRequestVO;
+import com.justin.hootsuite.data.MediaLinkResponseVO;
+import com.justin.hootsuite.data.MediaUploadStatusResponseVO;
+import com.justin.hootsuite.data.ScheduleMessageVO;
+import com.justin.hootsuite.data.SchedulePostResponseVO;
+import com.justin.hootsuite.data.SocialMediaProfilesVO;
+import com.justin.hootsuite.data.TokenResponseVO;
 import com.siliconmtn.io.http.SMTHttpConnectionManager;
 import com.siliconmtn.io.http.SMTHttpConnectionManager.HttpConnectionType;
 
@@ -36,29 +40,40 @@ import com.siliconmtn.io.http.SMTHttpConnectionManager.HttpConnectionType;
  * @since May 11, 2020
  * @updates:
  ****************************************************************************/
-public class HootsuiteRequests {
+public class HootsuiteManager {
 
 	static Logger log = Logger.getLogger(Process.class.getName());
-	private String token = "g8LxHnx95IklQjggbYoUT_VNG_4Uc5jWaP1C1u-Qtz4.5pimTHRcQVsUGdqNIDCGPEPXAL022TEkcIWmQaU4rO0";
-	private String refresh_token = "Gc6iLlaOc8TbyL8BfgDSorn1yGlgHN3yqpod1knXx3U.eorgqqKpA5S2moVt8HMWiz72OUGhF59BKe3bYgM99Is";
+	private String token = "IutwTowGgvZw_6qeb7EdcRo6x-aMkze5UiWxyWN3VvQ.D6IlumYR6SIgiEhRhHgVLNFldXI7G4y8_tlZdxv7GdM";
+	private String refresh_token = "BcPu4q2TXq_ELM-XSCC5xIAp3qmM4JbvgNZwL-fMrQM.Q4cWK6V5F1WGzKzg3Q2Bl6wdkPL2feyDc8guBJyDNmI";
 	private Date tokenExperationDate = new Date();
+	
 
+	/**
+	 * Public main for interfacing with the command line
+	 * @param args
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	public static void main(String[] args) throws IOException, InterruptedException {
-		HootsuiteRequests hr = new HootsuiteRequests();
-
-		HashMap<String, String> socialProfilesMap = hr.getSocialProfiles();
-
-		String messageText = "Java Test message.";
-
+		HootsuiteManager hr = new HootsuiteManager();
+		hr.process();
+	}
+	
+	private void process() throws IOException {
+		
+		HashMap<String, String> socialProfilesMap = getSocialProfiles();
+		
 		ArrayList<String> socialProfiles = new ArrayList<>();
 
 		socialProfiles.add(socialProfilesMap.get("TWITTER"));
 
+		String messageText = "Java Test message.";
+
 		String postDate = "2020-5-28T22:10:00Z";
 
-		hr.postMessageWithMedia(hr, messageText, socialProfiles, postDate, "/home/justinjeffrey/Downloads/demoImg.jpeg",
+		postMessageWithMedia(messageText, socialProfiles, postDate, "/home/justinjeffrey/Downloads/demoImg.jpeg",
 				"image/jpeg");
-
+		
 	}
 
 	/**
@@ -73,11 +88,11 @@ public class HootsuiteRequests {
 	 *                       the message. ("YYYY-M-DTHH:MM:SSZ")
 	 *                       https://en.wikipedia.org/wiki/ISO_8601
 	 */
-	public void postMessage(HootsuiteRequests hr, String messageText, ArrayList<String> socialProfiles,
+	public void postMessage(String messageText, ArrayList<String> socialProfiles,
 			String postDate) {
 		String mediaId = "";
 		try {
-			hr.schedulePost(socialProfiles, postDate, messageText, mediaId);
+			schedulePost(socialProfiles, postDate, messageText, mediaId);
 		} catch (Exception e) {
 			log.info(e);
 		}
@@ -99,12 +114,12 @@ public class HootsuiteRequests {
 	 * @param mimeType       String formatted mimeType. ("image/jpeg")
 	 * @param sizeBytes      media byte size.
 	 */
-	public void postMessageWithMedia(HootsuiteRequests hr, String messageText, ArrayList<String> socialProfiles,
+	public void postMessageWithMedia(String messageText, ArrayList<String> socialProfiles,
 			String postDate, String mediaLocation, String mimeType) {
 		String mediaId = "";
 		try {
-			mediaId = hr.uploadHootsuiteMedia(mimeType, mediaLocation);
-			hr.schedulePost(socialProfiles, postDate, messageText, mediaId);
+			mediaId = uploadHootsuiteMedia(mimeType, mediaLocation);
+			schedulePost(socialProfiles, postDate, messageText, mediaId);
 		} catch (Exception e) {
 			log.info(e);
 		}
