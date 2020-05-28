@@ -1,4 +1,8 @@
 package com.justin.hootsuite.data;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /****************************************************************************
  * <b>Title</b>: ArticleVO.java
  * <b>Project</b>: Hootsuite
@@ -14,11 +18,6 @@ package com.justin.hootsuite.data;
 public class PostVO {
 	
 	
-	
-	
-	PostVO() {
-		
-	}
 	
 	
 }
