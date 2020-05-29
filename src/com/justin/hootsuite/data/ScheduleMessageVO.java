@@ -21,7 +21,7 @@ public class ScheduleMessageVO {
 
 	private String text;
 	private List<String> socialProfileIds = new ArrayList<>();
-	private Date scheduledSendTime;
+	private String scheduledSendTime;
 	private List<Map<String, String>> media = new ArrayList<>();
 	/**
 	 * @return the text
@@ -75,13 +75,16 @@ public class ScheduleMessageVO {
 	/**
 	 * @return the scheduledSendTime
 	 */
-	public Date getScheduledSendTime() {
+	public String getScheduledSendTime() {
 		return scheduledSendTime;
 	}
 	/**
 	 * @param scheduledSendTime the scheduledSendTime to set
 	 */
 	public void setScheduledSendTime(Date scheduledSendTime) {
+		scheduledSendTime
+		
+		
 		this.scheduledSendTime = scheduledSendTime;
 	}
 	

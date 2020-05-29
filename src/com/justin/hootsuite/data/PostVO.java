@@ -1,15 +1,20 @@
 package com.justin.hootsuite.data;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
+
+import org.apache.log4j.Logger;
 
 /****************************************************************************
- * <b>Title</b>: ArticleVO.java
- * <b>Project</b>: Hootsuite
- * <b>Description: </b> VO for holding information required to create a new post for an article
- * <b>Copyright:</b> Copyright (c) 2020
- * <b>Company:</b> Silicon Mountain Technologies
+ * <b>Title</b>: ArticleVO.java <b>Project</b>: Hootsuite <b>Description: </b>
+ * VO for holding information required to create a new post for an article
+ * <b>Copyright:</b> Copyright (c) 2020 <b>Company:</b> Silicon Mountain
+ * Technologies
  * 
  * @author justinjeffrey
  * @version 3.0
@@ -17,16 +22,20 @@ import java.util.Map;
  * @updates:
  ****************************************************************************/
 public class PostVO {
+
+	static Logger log = Logger.getLogger(Process.class.getName());
 	
 	String messageText;
-	Date postDate = new Date(); //We need to add 1 day to this at some point
+	Date postDate; // We need to add 1 day to this at some point
 	String mediaId;
 	String mimeType;
 	String mediaLocation;
-	
+
 	public PostVO() {
 		messageText = "Java test message in PostVO";
-
+		mediaLocation = "/home/justinjeffrey/Downloads/demoImg.jpeg";
+		mimeType = "image/jpeg";
+		postDate = new Date();
 	}
 
 	/**
@@ -44,17 +53,35 @@ public class PostVO {
 	}
 
 	/**
-	 * @return the postDate
+	 * @return the postDate as a ISO formatted String
 	 */
-	public Date getPostDate() {
-		return postDate;
+	public String getPostDate() {
+
+		TimeZone tz = TimeZone.getTimeZone("UTC");
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'"); // Quoted "Z" to indicate UTC, no timezone offset
+		df.setTimeZone(tz);
+		String dateAsISO = df.format(postDate);
+
+		return dateAsISO;
 	}
 
 	/**
-	 * @param postDate the postDate to set
+	 * Set the Post Date value.
+	 * @param postDayIncrement int that determines the number of days in the future the post will be scheduled.
 	 */
-	public void setPostDate(Date postDate) {
-		this.postDate = postDate;
+	public void setPostDate(int postDayIncrement) {
+		Calendar c = Calendar.getInstance();
+
+		try {
+			// Setting the date to the given date
+			c.setTime(new Date());
+		} catch (Exception e) {
+			log.info(e);
+		}
+		
+		c.add(Calendar.DAY_OF_MONTH, postDayIncrement);
+
+		this.postDate = c.getTime();
 	}
 
 	/**
@@ -98,8 +125,5 @@ public class PostVO {
 	public void setMediaLocation(String mediaLocation) {
 		this.mediaLocation = mediaLocation;
 	}
-	
-	
-	
-	
+
 }

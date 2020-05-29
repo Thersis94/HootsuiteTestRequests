@@ -6,11 +6,13 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 // Apache Logger for detailed logging utilities
 import org.apache.log4j.Logger;
@@ -29,6 +31,7 @@ import com.justin.hootsuite.data.SocialMediaProfilesVO;
 import com.justin.hootsuite.data.TokenResponseVO;
 import com.siliconmtn.io.http.SMTHttpConnectionManager;
 import com.siliconmtn.io.http.SMTHttpConnectionManager.HttpConnectionType;
+import com.siliconmtn.util.DateUtil;
 
 /****************************************************************************
  * <b>Title</b>: HootsuiteTestRequests.java <b>Project</b>: Hootsuite
@@ -44,8 +47,8 @@ import com.siliconmtn.io.http.SMTHttpConnectionManager.HttpConnectionType;
 public class HootsuiteManager {
 
 	static Logger log = Logger.getLogger(Process.class.getName());
-	private String token = "IutwTowGgvZw_6qeb7EdcRo6x-aMkze5UiWxyWN3VvQ.D6IlumYR6SIgiEhRhHgVLNFldXI7G4y8_tlZdxv7GdM";
-	private String refresh_token = "1lv743Nhy9fAAbMAz_wnczeYtf1GgokK8U2OjQrK42k.GEKrJvcWgu65ouDQYifTEQ-8lNqnt8Cdouni7Gyp67w";
+	private String token = "MkEffyQu8Z7-lfV6fa7_67BcIOoQBgC3YVrrBceuWwg.M5e_1AVsnZyPrMWQP6SslQ2D-SCcw3KiN3dAYCSHqWs";
+	private String refresh_token = "gWZEjzzjWHugVkA5LOtFAuNBN_MTyO8n2S60blp-2OQ.zwXgc1iOXmsm6UDj-D_afOPQ6F2cyBvGCEuCsO9qSAk";
 	private Date tokenExperationDate = new Date();
 	
 
@@ -67,9 +70,20 @@ public class HootsuiteManager {
 		
 //		refreshToken();
 
-		String postDate = "2020-5-28T22:10:00Z";		
+		String postDate = "2020-5-28T22:10:00Z";	
+		
+		DateUtil du = new DateUtil();
+		
+		Date date = new Date(System.currentTimeMillis());
+		
+		SimpleDateFormat sdf;
+		sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SS");
+		sdf.setTimeZone(TimeZone.getTimeZone("MT"));
+		String text = sdf.format(date);
 
-		postMessage(post, client); 
+		log.info(text);
+
+//		postMessage(post, client); 
 		
 	}
 
@@ -90,9 +104,6 @@ public class HootsuiteManager {
 	 * @param sizeBytes      media byte size.
 	 */
 	public void postMessage(PostVO post, HootsuiteClientData client) {
-		
-		
-		String mediaId = "";
 		try {
 			uploadHootsuiteMedia(post);
 			schedulePost(post, client);
@@ -298,7 +309,7 @@ public class HootsuiteManager {
 	 */
 	private void setMessageContent(ScheduleMessageVO message, Date scheduledSendTime, List<String> socialIdList,
 			String messageText, List<Map<String, String>> mediaList) {
-		message.setDate(scheduledSendTime);
+		message.setScheduledSendTime(scheduledSendTime);
 		message.setSocialProfiles(socialIdList);
 		message.setText(messageText);// This needs to be restricted to a length of 280 characters for twitter
 		message.setMedia(mediaList);
@@ -352,6 +363,7 @@ public class HootsuiteManager {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
+
 	private void waitForSuccessfulUpload(MediaLinkResponseVO response) throws IOException, InterruptedException {
 
 		// Find a better way to do this!
