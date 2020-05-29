@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 
 // Gson for parsing json data
 import com.google.gson.Gson;
-
+import com.justin.hootsuite.data.HootsuiteClientData;
 // Local Libs
 import com.justin.hootsuite.data.MediaLinkRequestVO;
 import com.justin.hootsuite.data.MediaLinkResponseVO;
@@ -63,13 +63,13 @@ public class HootsuiteManager {
 	private void process() throws IOException {
 		
 		PostVO post = new PostVO();
+		HootsuiteClientData client = new HootsuiteClientData();
 		
 //		refreshToken();
 
-		String postDate = "2020-5-28T22:10:00Z";
+		String postDate = "2020-5-28T22:10:00Z";		
 
-		postMessage(post, postDate, "/home/justinjeffrey/Downloads/demoImg.jpeg",
-				"image/jpeg");
+		postMessage(post, client); 
 		
 	}
 
@@ -89,13 +89,13 @@ public class HootsuiteManager {
 	 * @param mimeType       String formatted mimeType. ("image/jpeg")
 	 * @param sizeBytes      media byte size.
 	 */
-	public void postMessage(String messageText, ArrayList<String> socialProfiles,
-			String postDate, String mediaLocation, String mimeType) {
-		 
+	public void postMessage(PostVO post, HootsuiteClientData client) {
+		
+		
 		String mediaId = "";
 		try {
-			mediaId = uploadHootsuiteMedia(mimeType, mediaLocation);
-			schedulePost(socialProfiles, postDate, messageText, mediaId);
+			uploadHootsuiteMedia(post);
+			schedulePost(post, client);
 		} catch (Exception e) {
 			log.info(e);
 		}
@@ -243,20 +243,19 @@ public class HootsuiteManager {
 	 * @return The id of the scheduled pot
 	 * @throws IOException
 	 */
-	private void schedulePost(ArrayList<String> socialIdList, String scheduledSendTime, String messageText,
-			String mediaIds) throws IOException {
+	private void schedulePost(PostVO post, HootsuiteClientData client) throws IOException {
 
 //		checkToken();
 
 		List<Map<String, String>> mediaList = new ArrayList<>();
 		
-		populateMediaList(mediaList, mediaIds);
+		populateMediaList(mediaList, client.getSocialIds());
 
 		Gson gson = new Gson();
 
 		ScheduleMessageVO message = new ScheduleMessageVO();
 
-		setMessageContent(message, scheduledSendTime, socialIdList, messageText, mediaList);
+		setMessageContent(message, post.getPostDate(), client.getSocialIds(), post.getMessageText(), mediaList);
 
 		byte[] document = gson.toJson(message).getBytes();
 
@@ -280,10 +279,12 @@ public class HootsuiteManager {
 	 * @param mediaList a list of maps containing the media ids that will be attached to the message body 
 	 * @param mediaIds list of social media ids that will be added to the mediaList
 	 */
-	private void populateMediaList(List<Map<String, String>> mediaList, String mediaId) {
-		Map<String, String> mediaIdMap = new HashMap<>();
-			mediaIdMap.put("id", mediaId);
+	private void populateMediaList(List<Map<String, String>> mediaList, List<String> socialIds) {
+		for(String id : socialIds) {
+			Map<String, String> mediaIdMap = new HashMap<>();
+			mediaIdMap.put("id", id);
 			mediaList.add(mediaIdMap);
+		}
 	}
 
 	/**
@@ -295,7 +296,7 @@ public class HootsuiteManager {
 	 * @param messageText
 	 * @param mediaList
 	 */
-	private void setMessageContent(ScheduleMessageVO message, String scheduledSendTime, ArrayList<String> socialIdList,
+	private void setMessageContent(ScheduleMessageVO message, Date scheduledSendTime, List<String> socialIdList,
 			String messageText, List<Map<String, String>> mediaList) {
 		message.setDate(scheduledSendTime);
 		message.setSocialProfiles(socialIdList);
@@ -307,13 +308,12 @@ public class HootsuiteManager {
 	 * getMediaUploadLink will request a link to the Hootsuite AWS file server that
 	 * can be used in conjunction with upload image to create a media link for new
 	 * message uploads
+	 * @param post 
 	 * 
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private String uploadHootsuiteMedia(String mimeType, String path) throws IOException, InterruptedException {
-
-		String mediaId = "";
+	private void uploadHootsuiteMedia(PostVO post) throws IOException, InterruptedException {
 
 //		checkToken();
 
@@ -323,7 +323,7 @@ public class HootsuiteManager {
 		cm.addRequestHeader("Authorization", "Bearer " + token);
 
 		MediaLinkRequestVO mlr = new MediaLinkRequestVO();
-		mlr.setMimeType(mimeType);
+		mlr.setMimeType(post.getMimeType());
 
 		byte[] document = gson.toJson(mlr).getBytes();
 
@@ -334,16 +334,14 @@ public class HootsuiteManager {
 				MediaLinkResponseVO.class);
 
 		if (response.successfulRequest()) {
-			uploadMediaToAWS(response, mlr, path);
-			mediaId = response.getId();
+			uploadMediaToAWS(response, mlr, post.getMediaLocation());
+			post.setMediaId(response.getId());
 		} else {
 			log.info("checkMediaLinkResponse returned false");
 			log.info(response.getError() + " : " + response.getError_description());
 		}
 
 		waitForSuccessfulUpload(response);
-
-		return mediaId;
 	}
 
 	/**

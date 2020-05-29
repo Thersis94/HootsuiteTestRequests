@@ -19,7 +19,7 @@ public class HootsuiteClientData {
 
 	private Map<String, String> socialProfiles = new HashMap<>();
 
-	HootsuiteClientData() {
+	public HootsuiteClientData() {
 		socialProfiles.put("TWITTER", "131070214");
 		socialProfiles.put("FACEBOOK", "130968924");
 	}

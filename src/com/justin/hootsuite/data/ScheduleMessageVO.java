@@ -1,6 +1,7 @@
 package com.justin.hootsuite.data;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +21,7 @@ public class ScheduleMessageVO {
 
 	private String text;
 	private List<String> socialProfileIds = new ArrayList<>();
-	private String scheduledSendTime;
+	private Date scheduledSendTime;
 	private List<Map<String, String>> media = new ArrayList<>();
 	/**
 	 * @return the text
@@ -46,18 +47,7 @@ public class ScheduleMessageVO {
 	public void setSocialProfiles(List<String> socialProfiles) {
 		this.socialProfileIds = socialProfiles;
 	}
-	/**
-	 * @return the date
-	 */
-	public String getDate() {
-		return scheduledSendTime;
-	}
-	/**
-	 * @param date the date to set
-	 */
-	public void setDate(String date) {
-		this.scheduledSendTime = date;
-	}
+	
 	/**
 	 * @return the media
 	 */
@@ -69,6 +59,30 @@ public class ScheduleMessageVO {
 	 */
 	public void setMedia(List<Map<String, String>> mediaList) {
 		this.media = mediaList;
+	}
+	/**
+	 * @return the socialProfileIds
+	 */
+	public List<String> getSocialProfileIds() {
+		return socialProfileIds;
+	}
+	/**
+	 * @param socialProfileIds the socialProfileIds to set
+	 */
+	public void setSocialProfileIds(List<String> socialProfileIds) {
+		this.socialProfileIds = socialProfileIds;
+	}
+	/**
+	 * @return the scheduledSendTime
+	 */
+	public Date getScheduledSendTime() {
+		return scheduledSendTime;
+	}
+	/**
+	 * @param scheduledSendTime the scheduledSendTime to set
+	 */
+	public void setScheduledSendTime(Date scheduledSendTime) {
+		this.scheduledSendTime = scheduledSendTime;
 	}
 	
 	
