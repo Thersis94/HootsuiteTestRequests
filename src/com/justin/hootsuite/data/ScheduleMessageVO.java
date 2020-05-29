@@ -81,10 +81,7 @@ public class ScheduleMessageVO {
 	/**
 	 * @param scheduledSendTime the scheduledSendTime to set
 	 */
-	public void setScheduledSendTime(Date scheduledSendTime) {
-		scheduledSendTime
-		
-		
+	public void setScheduledSendTime(String scheduledSendTime) {
 		this.scheduledSendTime = scheduledSendTime;
 	}
 	
