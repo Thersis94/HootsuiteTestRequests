@@ -22,6 +22,7 @@ import com.google.gson.Gson;
 import com.justin.hootsuite.data.MediaLinkRequestVO;
 import com.justin.hootsuite.data.MediaLinkResponseVO;
 import com.justin.hootsuite.data.MediaUploadStatusResponseVO;
+import com.justin.hootsuite.data.PostVO;
 import com.justin.hootsuite.data.ScheduleMessageVO;
 import com.justin.hootsuite.data.SchedulePostResponseVO;
 import com.justin.hootsuite.data.SocialMediaProfilesVO;
@@ -44,7 +45,7 @@ public class HootsuiteManager {
 
 	static Logger log = Logger.getLogger(Process.class.getName());
 	private String token = "IutwTowGgvZw_6qeb7EdcRo6x-aMkze5UiWxyWN3VvQ.D6IlumYR6SIgiEhRhHgVLNFldXI7G4y8_tlZdxv7GdM";
-	private String refresh_token = "BcPu4q2TXq_ELM-XSCC5xIAp3qmM4JbvgNZwL-fMrQM.Q4cWK6V5F1WGzKzg3Q2Bl6wdkPL2feyDc8guBJyDNmI";
+	private String refresh_token = "1lv743Nhy9fAAbMAz_wnczeYtf1GgokK8U2OjQrK42k.GEKrJvcWgu65ouDQYifTEQ-8lNqnt8Cdouni7Gyp67w";
 	private Date tokenExperationDate = new Date();
 	
 
@@ -61,41 +62,15 @@ public class HootsuiteManager {
 	
 	private void process() throws IOException {
 		
-		HashMap<String, String> socialProfilesMap = getSocialProfiles();
+		PostVO post = new PostVO();
 		
-		ArrayList<String> socialProfiles = new ArrayList<>();
-
-		socialProfiles.add(socialProfilesMap.get("TWITTER"));
-
-		String messageText = "Java Test message.";
+//		refreshToken();
 
 		String postDate = "2020-5-28T22:10:00Z";
 
-		postMessageWithMedia(messageText, socialProfiles, postDate, "/home/justinjeffrey/Downloads/demoImg.jpeg",
+		postMessage(post, postDate, "/home/justinjeffrey/Downloads/demoImg.jpeg",
 				"image/jpeg");
 		
-	}
-
-	/**
-	 * Post a message using the hootsuite api.
-	 * 
-	 * @param hr             an instance of HootsuiteRequests.
-	 * @param messageText    a String with the text you would like to appear in the
-	 *                       message. (Carriage returns can be used to format the
-	 *                       message.)
-	 * @param socialProfiles a ArrayList of socialProfile ids.
-	 * @param postDate       ISO 8601 formatted String containing the date to post
-	 *                       the message. ("YYYY-M-DTHH:MM:SSZ")
-	 *                       https://en.wikipedia.org/wiki/ISO_8601
-	 */
-	public void postMessage(String messageText, ArrayList<String> socialProfiles,
-			String postDate) {
-		String mediaId = "";
-		try {
-			schedulePost(socialProfiles, postDate, messageText, mediaId);
-		} catch (Exception e) {
-			log.info(e);
-		}
 	}
 
 	/**
@@ -114,8 +89,9 @@ public class HootsuiteManager {
 	 * @param mimeType       String formatted mimeType. ("image/jpeg")
 	 * @param sizeBytes      media byte size.
 	 */
-	public void postMessageWithMedia(String messageText, ArrayList<String> socialProfiles,
+	public void postMessage(String messageText, ArrayList<String> socialProfiles,
 			String postDate, String mediaLocation, String mimeType) {
+		 
 		String mediaId = "";
 		try {
 			mediaId = uploadHootsuiteMedia(mimeType, mediaLocation);

@@ -1,5 +1,6 @@
 package com.justin.hootsuite.data;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +17,14 @@ import java.util.Map;
  * @updates:
  ****************************************************************************/
 public class PostVO {
+	
+	String messageText;
+	Date postDate = new Date(); //We need to add 1 day to this at some point
+	
+	public PostVO() {
+		messageText = "Java test message in PostVO";
+
+	}
 	
 	
 	
