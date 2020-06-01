@@ -100,6 +100,10 @@ public class PostVO {
 		this.mediaId = mediaId;
 	}
 	
+	/**
+	 *  Add a single media id to the MediaIds List
+	 * @param mediaId
+	 */
 	public void addMediaId(String mediaId) {
 		this.mediaId.add(mediaId);
 	}

@@ -44,7 +44,7 @@ import com.siliconmtn.io.http.SMTHttpConnectionManager.HttpConnectionType;
 public class HootsuiteManager {
 
 	static Logger log = Logger.getLogger(Process.class.getName());
-	private String token = "3bFKr04ugwFuv36NBTzZUrKMHGBeuCbQx7jXd9QeZEw.hGN6s0ugowhX7ipgzv54fvcKg6QR68b379sA1AmaUcQ";
+	private String token = "2SGSsaCaVdu2cEr-kVQljD-FamKmChG-HNCdbey1gM0.6aBSbvhqjR9-RjIAK2kwILHdJ_RrJRtjW9WbZGW9cTg";
 	private String refresh_token = "gWZEjzzjWHugVkA5LOtFAuNBN_MTyO8n2S60blp-2OQ.zwXgc1iOXmsm6UDj-D_afOPQ6F2cyBvGCEuCsO9qSAk";
 	private Date tokenExperationDate = new Date();
 	
@@ -62,35 +62,21 @@ public class HootsuiteManager {
 	
 	private void process() throws IOException {
 		
-		PostVO post = new PostVO();
-		HootsuiteClientData client = new HootsuiteClientData();
+//		PostVO post = new PostVO();
+//		HootsuiteClientData client = new HootsuiteClientData();
+//		
+//		post.setPostDate(1);
+//		
+//		postMessage(post, client); 
 		
-		post.setPostDate(1);
-		
-//		refreshToken();
-
-		
-	
-
-		postMessage(post, client); 
+//		log.info(getSocialProfiles());
 		
 	}
 
 	/**
 	 * Post a message with media using the hootsuite api.
-	 * 
-	 * @param hr             an instance of HootsuiteRequests.
-	 * @param messageText    a String with the text you would like to appear in the
-	 *                       message. (Carriage returns can be used to format the
-	 *                       message.)
-	 * @param socialProfiles a ArrayList of socialProfile ids.
-	 * @param postDate       ISO 8601 formatted String containing the date to post
-	 *                       the message. ("YYYY-M-DTHH:MM:SSZ")
-	 *                       https://en.wikipedia.org/wiki/ISO_8601
-	 * @param mediaLocation  String formatted path to the media that is being
-	 *                       uploaded
-	 * @param mimeType       String formatted mimeType. ("image/jpeg")
-	 * @param sizeBytes      media byte size.
+	 * @param post VO containing post values (text, media ids, date to post)
+	 * @param client VO containing client values (Social profiles ids)
 	 */
 	public void postMessage(PostVO post, HootsuiteClientData client) {
 		try {
@@ -191,7 +177,8 @@ public class HootsuiteManager {
 
 		SMTHttpConnectionManager cm = new SMTHttpConnectionManager();
 
-		addGetSocialProfilesHeaders(cm);
+		cm.addRequestHeader("Authorization", "Bearer " + token);
+		cm.addRequestHeader("Content-Type", "type:application/json;charset=utf-8");
 
 		HttpConnectionType get = HttpConnectionType.GET;
 
@@ -203,18 +190,23 @@ public class HootsuiteManager {
 				SocialMediaProfilesVO.class);
 		HashMap<String, String> socialProfiles = response.getAllSocialIds();
 
+		if(response.getError() != null) {
+			log.info(response.getError() + " : " + response.getError_description());
+		}
+		
 		return socialProfiles;
 	}
 
-	/**
-	 * Adds required headers for the Hootsuite get social profiles end point.
-	 * 
-	 * @param cm
-	 */
-	private void addGetSocialProfilesHeaders(SMTHttpConnectionManager cm) {
-		cm.addRequestHeader("Content-Type", "type:application/json;charset=utf-8");
-		cm.addRequestHeader("Authorization", "Bearer " + token);
-	}
+
+//	/**
+//	 * Adds required headers for the Hootsuite get social profiles end point.
+//	 * 
+//	 * @param cm
+//	 */
+//	private void addGetSocialProfilesHeaders(SMTHttpConnectionManager cm) {
+//		
+//		
+//	}
 
 	/**
 	 * Checks to see if the token is expired and refreshes the token if it is.
@@ -230,17 +222,8 @@ public class HootsuiteManager {
 
 	/**
 	 * Schedules a social media post using the hootsuite api
-	 * 
-	 * @param socialIdList      List of social media ids
-	 * @param scheduledSendTime ISO 8601 formatted String containing the date to
-	 *                          post the message. ("YYYY-M-DTHH:MM:SSZ")
-	 *                          https://en.wikipedia.org/wiki/ISO_8601
-	 * @param messageText       a String with the text you would like to appear in
-	 *                          the message. (Carriage returns can be used to format
-	 *                          the message.)
-	 * @param mediaId           the id returned when uploading media using the
-	 *                          hootsuite api
-	 * @return The id of the scheduled pot
+	 * @param post VO containing post values (text, media ids, date to post)
+	 * @param client VO containing client values (Social profiles ids)
 	 * @throws IOException
 	 */
 	private void schedulePost(PostVO post, HootsuiteClientData client) throws IOException {
@@ -261,8 +244,6 @@ public class HootsuiteManager {
 
 		SMTHttpConnectionManager cm = new SMTHttpConnectionManager();
 		cm.addRequestHeader("Authorization", "Bearer " + token);
-		
-		
 
 		ByteBuffer in = ByteBuffer.wrap(cm.sendBinaryData("https://platform.hootsuite.com/v1/messages", document,
 				"application/json", HttpConnectionType.POST));

@@ -18,6 +18,8 @@ import java.util.HashMap;
 public class SocialMediaProfilesVO {
 	
 	ArrayList<SocialMediaProfileVO> data = new ArrayList<>();
+	String error;
+	String error_description;
 	
 	/**
 	 * Returns the social profile id of the profile name passed into it.
@@ -44,5 +46,47 @@ public class SocialMediaProfilesVO {
 			ids.put(profile.getType(), profile.getId());
 		}
 		return ids;
+	}
+
+	/**
+	 * @return the data
+	 */
+	public ArrayList<SocialMediaProfileVO> getData() {
+		return data;
+	}
+
+	/**
+	 * @param data the data to set
+	 */
+	public void setData(ArrayList<SocialMediaProfileVO> data) {
+		this.data = data;
+	}
+
+	/**
+	 * @return the error
+	 */
+	public String getError() {
+		return error;
+	}
+
+	/**
+	 * @param error the error to set
+	 */
+	public void setError(String error) {
+		this.error = error;
+	}
+
+	/**
+	 * @return the error_description
+	 */
+	public String getError_description() {
+		return error_description;
+	}
+
+	/**
+	 * @param error_description the error_description to set
+	 */
+	public void setError_description(String error_description) {
+		this.error_description = error_description;
 	}
 }
