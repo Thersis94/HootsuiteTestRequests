@@ -2,9 +2,11 @@ package com.justin.hootsuite.data;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -27,7 +29,7 @@ public class PostVO {
 	
 	String messageText;
 	Date postDate; // We need to add 1 day to this at some point
-	String mediaId;
+	List<String> mediaId = new ArrayList<>();
 	String mimeType;
 	String mediaLocation;
 
@@ -87,15 +89,19 @@ public class PostVO {
 	/**
 	 * @return the mediaId
 	 */
-	public String getMediaId() {
+	public List<String> getMediaIds() {
 		return mediaId;
 	}
 
 	/**
 	 * @param mediaId the mediaId to set
 	 */
-	public void setMediaId(String mediaId) {
+	public void setMediaIds(List<String> mediaId) {
 		this.mediaId = mediaId;
+	}
+	
+	public void addMediaId(String mediaId) {
+		this.mediaId.add(mediaId);
 	}
 
 	/**

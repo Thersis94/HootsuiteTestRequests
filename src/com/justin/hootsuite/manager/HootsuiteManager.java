@@ -44,7 +44,7 @@ import com.siliconmtn.io.http.SMTHttpConnectionManager.HttpConnectionType;
 public class HootsuiteManager {
 
 	static Logger log = Logger.getLogger(Process.class.getName());
-	private String token = "gfKoire4yJKfnvOgwvqsDTS90VSbfuu7Z9IJJRocLYg.jnARda5LhxDex21nYy6AThfvQEU4nEUrFmRr_lOyk8w";
+	private String token = "3bFKr04ugwFuv36NBTzZUrKMHGBeuCbQx7jXd9QeZEw.hGN6s0ugowhX7ipgzv54fvcKg6QR68b379sA1AmaUcQ";
 	private String refresh_token = "gWZEjzzjWHugVkA5LOtFAuNBN_MTyO8n2S60blp-2OQ.zwXgc1iOXmsm6UDj-D_afOPQ6F2cyBvGCEuCsO9qSAk";
 	private Date tokenExperationDate = new Date();
 	
@@ -249,7 +249,7 @@ public class HootsuiteManager {
 
 		List<Map<String, String>> mediaList = new ArrayList<>();
 		
-		populateMediaList(mediaList, client.getSocialIds());
+		populateMediaList(mediaList, post.getMediaIds());
 
 		Gson gson = new Gson();
 
@@ -261,6 +261,8 @@ public class HootsuiteManager {
 
 		SMTHttpConnectionManager cm = new SMTHttpConnectionManager();
 		cm.addRequestHeader("Authorization", "Bearer " + token);
+		
+		
 
 		ByteBuffer in = ByteBuffer.wrap(cm.sendBinaryData("https://platform.hootsuite.com/v1/messages", document,
 				"application/json", HttpConnectionType.POST));
@@ -335,7 +337,7 @@ public class HootsuiteManager {
 
 		if (response.successfulRequest()) {
 			uploadMediaToAWS(response, mlr, post.getMediaLocation());
-			post.setMediaId(response.getId());
+			post.addMediaId(response.getId());
 		} else {
 			log.info("checkMediaLinkResponse returned false");
 			log.info(response.getError() + " : " + response.getError_description());
