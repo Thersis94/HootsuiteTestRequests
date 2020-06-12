@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 
 // Gson for parsing json data
 import com.google.gson.Gson;
+import com.justin.hootsuite.data.AuthResponseVO;
 import com.justin.hootsuite.data.HootsuiteClientData;
 // Local Libs
 import com.justin.hootsuite.data.MediaLinkRequestVO;
@@ -71,6 +72,10 @@ public class HootsuiteManager {
 		
 //		log.info(getSocialProfiles());
 		
+//		getOAuthCode();
+		
+		getToken();
+		
 	}
 
 	/**
@@ -85,6 +90,61 @@ public class HootsuiteManager {
 		} catch (Exception e) {
 			log.info(e);
 		}
+	}
+	
+	/**
+	 * Get a new set of Tokens
+	 * @throws IOException 
+	 */
+	private void getOAuthCode() throws IOException {
+		
+		Gson gson = new Gson();
+		Map<String, Object> parameters = new HashMap<>();
+		
+		SMTHttpConnectionManager cm = new SMTHttpConnectionManager();
+		
+//		cm.addRequestHeader("Authorization", "Basic YTYwZDA0MzItMzk5OS00YThkLTkxNDAtZjdhNDNmMzNjZjlmOlVac25hcW5mZVo5bA==");
+		cm.addRequestHeader("Accept", "text/html");
+		cm.addRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		
+//		addTokenParameters(parameters);
+		
+		HttpConnectionType get = HttpConnectionType.GET;
+		
+		
+		
+		// Send get request
+				ByteBuffer in = ByteBuffer
+						.wrap(cm.getRequestData("https://platform.hootsuite.com/oauth2/auth?response_type=code&client_id=a60d0432-3999-4a8d-9140-f7a43f33cf9f&scope=offline&redirect_uri=http://localhost:3000/callback&client_secret=UZsnaqnfeZ9l", parameters, get));
+				
+				
+				
+				log.info(StandardCharsets.UTF_8.decode(in).toString());
+				
+				
+	}
+	
+	private void getToken(String oauthCode) throws IOException {
+		
+		Gson gson = new Gson();
+		Map<String, Object> parameters = new HashMap<>();
+		
+		HttpConnectionType post = HttpConnectionType.POST;
+		
+		SMTHttpConnectionManager cm = new SMTHttpConnectionManager();
+		
+		parameters.put("grant_type", "authorization_code");
+		parameters.put("code", oauthCode);
+		parameters.put("redirect_uri", "http://localhost:3000/callback");// Redirect URI that is set in hootsuite.
+		
+		cm.addRequestHeader("Authorization", "Basic YTYwZDA0MzItMzk5OS00YThkLTkxNDAtZjdhNDNmMzNjZjlmOlVac25hcW5mZVo5bA==");// Basic header. This can probably be assigned using the SMTHTTP utility
+		
+		// Send post request
+		ByteBuffer in = ByteBuffer
+				.wrap(cm.getRequestData("https://platform.hootsuite.com/oauth2/token", parameters, post));
+		
+		log.info(StandardCharsets.UTF_8.decode(in).toString());
+		
 	}
 
 	/**
@@ -196,17 +256,6 @@ public class HootsuiteManager {
 		
 		return socialProfiles;
 	}
-
-
-//	/**
-//	 * Adds required headers for the Hootsuite get social profiles end point.
-//	 * 
-//	 * @param cm
-//	 */
-//	private void addGetSocialProfilesHeaders(SMTHttpConnectionManager cm) {
-//		
-//		
-//	}
 
 	/**
 	 * Checks to see if the token is expired and refreshes the token if it is.
